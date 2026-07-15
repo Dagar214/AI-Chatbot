@@ -3,8 +3,10 @@ import { useRef, useState, useCallback } from "react";
 /**
  * Wraps the browser's built-in SpeechRecognition (Web Speech API).
  * Works best in Chrome / Edge. Returns transcribed text via onResult.
+ * `lang` is a BCP-47 code like "en-US" or "hi-IN", chosen by the user
+ * in the UI so voice input works correctly across languages.
  */
-export function useSpeechRecognition(onResult) {
+export function useSpeechRecognition(onResult, lang = "en-US") {
   const recognitionRef = useRef(null);
   const [isListening, setIsListening] = useState(false);
   const [isSupported] = useState(
@@ -17,8 +19,6 @@ export function useSpeechRecognition(onResult) {
       return;
     }
 
-    // Stop any recognition session already in progress before starting
-    // a new one, to avoid "already started" errors.
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
@@ -28,7 +28,7 @@ export function useSpeechRecognition(onResult) {
       window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "en-US";
+    recognition.lang = lang;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -41,7 +41,7 @@ export function useSpeechRecognition(onResult) {
 
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         alert(
-          "Microphone access was blocked. Check your browser's site permissions AND your Windows microphone privacy settings (Settings > Privacy & security > Microphone)."
+          "Microphone access was blocked. Check your browser's site permissions AND your OS microphone privacy settings."
         );
       } else if (event.error === "no-speech") {
         // user just didn't say anything — no need to alert
@@ -57,7 +57,7 @@ export function useSpeechRecognition(onResult) {
 
     recognition.start();
     recognitionRef.current = recognition;
-  }, [isSupported, onResult]);
+  }, [isSupported, onResult, lang]);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();

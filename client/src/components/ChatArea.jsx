@@ -11,10 +11,19 @@ const SUGGESTIONS = [
   { icon: "💡", title: "Brainstorm ideas", subtitle: "Get creative suggestions and plans" },
 ];
 
+// Haryanvi doesn't have its own browser speech-recognition locale — it's
+// close enough to Hindi that selecting Hindi works reasonably well for it.
+const VOICE_LANGUAGES = [
+  { code: "en-US", label: "English" },
+  { code: "hi-IN", label: "हिंदी (+ हरियाणवी)" },
+  { code: "pa-IN", label: "ਪੰਜਾਬੀ" },
+];
+
 function ChatArea({ conversation, onUpdateConversation, onToggleSidebar }) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [voiceReplyEnabled, setVoiceReplyEnabled] = useState(true);
+  const [voiceLang, setVoiceLang] = useState("en-US");
   const messagesEndRef = useRef(null);
 
   const messages = conversation.messages;
@@ -55,7 +64,7 @@ function ChatArea({ conversation, onUpdateConversation, onToggleSidebar }) {
         ...c,
         messages: [...c.messages, { role: "model", text: reply }],
       }));
-      if (voiceReplyEnabled) speakText(reply);
+      if (voiceReplyEnabled) speakText(reply, voiceLang);
     } catch (err) {
       onUpdateConversation((c) => ({
         ...c,
@@ -73,7 +82,8 @@ function ChatArea({ conversation, onUpdateConversation, onToggleSidebar }) {
     (transcript) => {
       setInput(transcript);
       handleSend(transcript);
-    }
+    },
+    voiceLang
   );
 
   const handleKeyDown = (e) => {
@@ -146,6 +156,20 @@ function ChatArea({ conversation, onUpdateConversation, onToggleSidebar }) {
 
       <div className="chat-input-bar">
         <div className="chat-input-row">
+          <select
+            className="lang-select"
+            value={voiceLang}
+            onChange={(e) => setVoiceLang(e.target.value)}
+            title="Voice input language"
+            disabled={isLoading}
+          >
+            {VOICE_LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.label}
+              </option>
+            ))}
+          </select>
+
           <button
             className={`mic-btn ${isListening ? "listening" : ""}`}
             onClick={startListening}

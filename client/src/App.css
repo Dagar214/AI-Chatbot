@@ -469,6 +469,23 @@ body {
   opacity: 0.6;
 }
 
+.lang-select {
+  flex-shrink: 0;
+  background: rgba(148, 163, 184, 0.12);
+  color: #f1f5f9;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.lang-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .mic-btn,
 .send-btn {
   flex-shrink: 0;
