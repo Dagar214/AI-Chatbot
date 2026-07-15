@@ -471,19 +471,26 @@ body {
 
 .lang-select {
   flex-shrink: 0;
-  background: rgba(148, 163, 184, 0.12);
+  background: #1e293b;
   color: #f1f5f9;
-  border: none;
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 999px;
   padding: 8px 10px;
   font-size: 0.78rem;
   cursor: pointer;
   outline: none;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .lang-select:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.lang-select option {
+  background: #1e293b;
+  color: #f1f5f9;
 }
 
 .mic-btn,
